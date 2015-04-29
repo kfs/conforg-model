@@ -5,6 +5,7 @@ import by.ostis.common.conforg.model.dao.exception.DAOException;
 import by.ostis.common.conforg.model.entity.AcademicDegree;
 import by.ostis.common.sctpclient.model.ScAddress;
 import by.ostis.common.sctpclient.model.ScString;
+import by.ostis.common.sctpclient.utils.constants.ScElementType;
 
 import java.util.UUID;
 
@@ -37,10 +38,18 @@ public class AcademicDegreeDAOImpl implements AcademicDegreeDAO {
         final UUID addressUuid = UUID.randomUUID();
         ScAddress addressNode = ScUtils.INSTANCE.createElWithGivenSystemId(addressUuid);
 
+        ScAddress addressSpaceNode = ScUtils.INSTANCE.findElement(ScSpaces.ACADEMIC_DEGREE.getSystemId());
+        ScUtils.INSTANCE.createArc(ScElementType.SC_TYPE_ARC_POS, addressSpaceNode, addressNode);
+
         saveFields(element, addressNode);
 
         element.setSystemId(addressUuid);
         return addressUuid;
+    }
+
+    @Override
+    public AcademicDegree read(UUID systemId) throws DAOException {
+        return null;
     }
 
     private void saveFields(AcademicDegree element, ScAddress addressNode) throws DAOException {
