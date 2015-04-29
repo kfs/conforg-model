@@ -6,12 +6,15 @@ import by.ostis.common.sctpclient.client.SctpClientImpl;
 import by.ostis.common.sctpclient.exception.SctpClientException;
 import by.ostis.common.sctpclient.model.ScAddress;
 import by.ostis.common.sctpclient.model.ScIterator;
+import by.ostis.common.sctpclient.model.ScParameter;
 import by.ostis.common.sctpclient.model.ScString;
 import by.ostis.common.sctpclient.model.response.SctpResponse;
 import by.ostis.common.sctpclient.model.response.SctpResponseHeader;
 import by.ostis.common.sctpclient.model.response.SctpResultType;
 import by.ostis.common.sctpclient.utils.constants.ScElementType;
+import by.ostis.common.sctpclient.utils.constants.ScIteratorType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +40,11 @@ enum ScUtils {
         return new ScString(systemId);
     }
 
+    public ScAddress findElement(UUID uuid) throws DAOException {
+        String systemId = uuid.toString();
+        return findElement(systemId);
+    }
+
     public ScAddress findElement(String systemId) throws DAOException {
         SctpResponse<ScAddress> response;
         try {
@@ -49,7 +57,25 @@ enum ScUtils {
         return response.getAnswer();
     }
 
-    public void checkHeader(SctpResponseHeader header) throws DAOException {
+    public boolean isElementOfSpace(ScAddress element, ScSpaces space) throws DAOException {
+        final String spaceId = space.getSystemId();
+        ScAddress spaceAdr = findElement(spaceId);
+        List<ScParameter> parameters = new ArrayList<ScParameter>(3);
+        parameters.add(spaceAdr);
+        parameters.add(ScElementType.SC_TYPE_ARC_POS);
+        parameters.add(element);
+        try {
+            SctpResponse<List<ScIterator>> result = sctpClient
+                    .searchByIterator(ScIteratorType.SCTP_ITERATOR_3F_A_F, parameters);
+            checkHeader(result.getHeader());
+            List<ScIterator> iterators = result.getAnswer();
+            return !iterators.isEmpty();
+        } catch (SctpClientException e) {
+            throw new DAOException("cannot find element using 3FAF iterator", e);
+        }
+    }
+
+    private void checkHeader(SctpResponseHeader header) throws DAOException {
         SctpResultType resultType = header.getResultType();
         switch (resultType) {
             case SCTP_RESULT_ERROR_NO_ELEMENT:

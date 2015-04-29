@@ -5,7 +5,8 @@ enum ScSpaces implements ScIdentifiable {
     SECTIONS("conforg_sections_space"),
     REPORTS("conforg_reports_space"),
     PARTICIPANTS("conforg_participants_space"),
-    PERSONS("conforg_persons_space");
+    PERSONS("conforg_persons_space"),
+    ADDRESS("conforg_address");
 
     private String spaceSystemId;
 

@@ -2,9 +2,11 @@ package by.ostis.common.conforg.model.dao.impl;
 
 import by.ostis.common.conforg.model.dao.AddressDAO;
 import by.ostis.common.conforg.model.dao.exception.DAOException;
+import by.ostis.common.conforg.model.dao.exception.TypeMismatchException;
 import by.ostis.common.conforg.model.entity.Address;
 import by.ostis.common.sctpclient.model.ScAddress;
 import by.ostis.common.sctpclient.model.ScString;
+import by.ostis.common.sctpclient.utils.constants.ScElementType;
 
 import java.util.UUID;
 
@@ -39,6 +41,9 @@ public class AddressDAOImpl implements AddressDAO {
         final UUID addressUuid = UUID.randomUUID();
         ScAddress addressNode = ScUtils.INSTANCE.createElWithGivenSystemId(addressUuid);
 
+        ScAddress addressSpaceNode = ScUtils.INSTANCE.findElement(ScSpaces.ADDRESS.getSystemId());
+        ScUtils.INSTANCE.createArc(ScElementType.SC_TYPE_ARC_POS, addressSpaceNode, addressNode);
+
         saveFields(element, addressNode);
 
         element.setSystemId(addressUuid);
@@ -61,5 +66,19 @@ public class AddressDAOImpl implements AddressDAO {
         ScString houseNumberContent = ScUtils.INSTANCE.wrapString(element.getHouseNumber());
         ScAddress houseNumberNode = ScUtils.INSTANCE.createNodeWithContent(houseNumberContent);
         ScUtils.INSTANCE.createRelation(addressNode, houseNumberNode, ScChildRelations.HOUSE_NUMBER);
+    }
+
+    public Address read(UUID systemId) throws DAOException {
+        if (systemId == null) {
+            throw new NullPointerException("cannot find element, system id is null");
+        }
+        ScAddress addressElement = ScUtils.INSTANCE.findElement(systemId);
+        boolean convenientType = ScUtils.INSTANCE.isElementOfSpace(addressElement, ScSpaces.ADDRESS);
+        if (!convenientType) {
+            throw new TypeMismatchException("element with given system id doesn't belong to address space, id: "
+                    + systemId);
+        }
+
+        return new Address();
     }
 }

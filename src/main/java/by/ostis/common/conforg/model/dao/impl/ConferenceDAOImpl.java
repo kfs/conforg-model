@@ -42,4 +42,8 @@ public class ConferenceDAOImpl implements ConferenceDAO {
         // TODO save content
         return conferenceSystemId;
     }
+
+    public Conference read(UUID systemId) throws DAOException {
+        throw new DAOException("not implemented yet");
+    }
 }

@@ -13,4 +13,12 @@ public interface BaseDAO<Type> {
      * @throws DAOException if system identifier of @param element is non-empty.
      */
     UUID save(Type element) throws DAOException;
+
+    /**
+     * Performs read operation.
+     * @param systemId system identifier.
+     * @return element with nearby neighborhood loaded.
+     * @throws DAOException if element with given system id wasn't found.
+     */
+    Type read(UUID systemId) throws DAOException;
 }
