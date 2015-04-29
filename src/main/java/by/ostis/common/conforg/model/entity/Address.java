@@ -12,6 +12,14 @@ public class Address extends BaseEntity {
         super();
     }
 
+    public Address(String country, String city, String street, String houseNumber) {
+        super();
+        this.country = country;
+        this.city = city;
+        this.street = street;
+        this.houseNumber = houseNumber;
+    }
+
     public String getCountry() {
         return country;
     }

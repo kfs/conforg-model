@@ -1,6 +1,7 @@
 package by.ostis.common.conforg.model.dao.impl;
 
 import by.ostis.common.conforg.model.dao.exception.DAOException;
+import by.ostis.common.conforg.model.dao.exception.ElementNotFoundException;
 import by.ostis.common.sctpclient.client.SctpClient;
 import by.ostis.common.sctpclient.client.SctpClientImpl;
 import by.ostis.common.sctpclient.exception.SctpClientException;
@@ -148,13 +149,51 @@ enum ScUtils {
         }
     }
 
-//    public ScAddress createElWithContent(ScAddress parent, String content) throws DAOException {
-//        try {
-//            sctpClient.searchByIterator(ScIteratorType.SCTP_ITERATOR_3F_A_A, Arrays.asList(parent, ScElementType.SC_TYPE_ARC, ScElementType.SC_TYPE_NODE));
-//        } catch (SctpClientException e) {
-//            throw new DAOException("cannot get children from parent :" + parent, e);
-//        }
-//    }
+    public ScAddress findUniqueElementByParentAndRelation(ScAddress parent, ScAddress relation) throws DAOException {
+        try {
+            List<ScParameter> parameters = new ArrayList<ScParameter>(5);
+            parameters.add(parent);
+            parameters.add(ScElementType.SC_TYPE_ARC_COMMON);
+            parameters.add(ScElementType.SC_TYPE_NODE);
+            parameters.add(ScElementType.SC_TYPE_ARC_POS);
+            parameters.add(relation);
+            SctpResponse<List<ScIterator>> response = sctpClient
+                    .searchByIterator(ScIteratorType.SCTP_ITERATOR_5F_A_A_A_F, parameters);
+            checkHeader(response.getHeader());
+            List<ScIterator> results = response.getAnswer();
+            if (results.isEmpty()) {
+                throw new ElementNotFoundException("element not found");
+            }
+            if (results.size() > 1) {
+                throw new DAOException("element is non-unique");
+            }
+            ScIterator iterator = results.get(Constants.FIRST_ELEMENT);
+            ScParameter uniqueNode = iterator.getElement(Constants.ITERATOR_5_3RD);
+            if (uniqueNode instanceof ScAddress) {
+                return (ScAddress) uniqueNode;
+            } else {
+                throw new DAOException("returned parameter is not an instance of sc address, but: "
+                        + uniqueNode.getClass());
+            }
+        } catch (SctpClientException e) {
+            throw new DAOException("cannot get children from parent :" + parent, e);
+        }
+    }
+
+    public ScAddress findUniqueElementByParentAndRelation(ScAddress parent, ScIdentifiable relation) throws DAOException {
+        ScAddress relationAdr = findElement(relation.getSystemId());
+        return findUniqueElementByParentAndRelation(parent, relationAdr);
+    }
+
+    public String findElementContent(ScAddress element) throws DAOException {
+        try {
+            SctpResponse<String> response = sctpClient.getScLinkContent(element);
+            checkHeader(response.getHeader());
+            return response.getAnswer();
+        } catch (SctpClientException e) {
+            throw new DAOException("cannot load content of element", e);
+        }
+    }
 
 //    public List<ScIterator> findTripletByFixedNode() {
 //

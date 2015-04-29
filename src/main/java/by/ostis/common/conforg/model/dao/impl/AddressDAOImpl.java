@@ -78,7 +78,26 @@ public class AddressDAOImpl implements AddressDAO {
             throw new TypeMismatchException("element with given system id doesn't belong to address space, id: "
                     + systemId);
         }
+        return readFields(addressElement);
+    }
 
-        return new Address();
+    private Address readFields(ScAddress addressElement) throws DAOException {
+        ScAddress countryAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
+                ScChildRelations.COUNTRY);
+        String countryContent = ScUtils.INSTANCE.findElementContent(countryAdr);
+
+        ScAddress cityAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
+                ScChildRelations.CITY);
+        String cityContent = ScUtils.INSTANCE.findElementContent(cityAdr);
+
+        ScAddress streetAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
+                ScChildRelations.STREET);
+        String streetContent = ScUtils.INSTANCE.findElementContent(streetAdr);
+
+        ScAddress houseNumberAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
+                ScChildRelations.HOUSE_NUMBER);
+        String houseNumberContent = ScUtils.INSTANCE.findElementContent(houseNumberAdr);
+
+        return new Address(countryContent, cityContent, streetContent, houseNumberContent);
     }
 }
