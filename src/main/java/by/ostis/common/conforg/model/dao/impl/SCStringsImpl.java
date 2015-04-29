@@ -1,21 +1,20 @@
 package by.ostis.common.conforg.model.dao.impl;
 
-import by.ostis.common.conforg.model.dao.SCStrings;
 import by.ostis.common.sctpclient.model.ScString;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-class SCStringsImpl implements SCStrings{
+final class SCStringsImpl {
 
-    @Override
-    public ScString wrap(String value) {
+    private SCStringsImpl() {}
+
+    public static ScString wrap(String value) {
         return StringUtils.isNotEmpty(value) ? new ScString(value) : new ScString(StringUtils.EMPTY);
     }
 
-    @Override
-    public ScString wrap(DateTime dateTime) {
+    public static ScString wrap(DateTime dateTime) {
         ScString result;
         if(dateTime != null){
             DateTimeFormatter formatter = ISODateTimeFormat.basicDateTime();
@@ -27,18 +26,15 @@ class SCStringsImpl implements SCStrings{
         return result;
     }
 
-    @Override
-    public ScString wrap(Integer value) {
+    public static ScString wrap(Integer value) {
         return value == null ? new ScString(StringUtils.EMPTY) : new ScString(value.toString());
     }
 
-    @Override
-    public String unwrapToString(String scString) {
+    public static String unwrapToString(String scString) {
         return StringUtils.EMPTY.equals(scString) ? StringUtils.EMPTY : scString;
     }
 
-    @Override
-    public DateTime unwrapToDateTime(String scString) {
+    public static DateTime unwrapToDateTime(String scString) {
         DateTime result;
         if(!scString.equals(StringUtils.EMPTY)){
             DateTimeFormatter formatter = ISODateTimeFormat.basicDateTime();
@@ -49,8 +45,7 @@ class SCStringsImpl implements SCStrings{
         return result;
     }
 
-    @Override
-    public Integer unwrapToInteger(String scString) {
+    public static Integer unwrapToInteger(String scString) {
         return scString.equals(StringUtils.EMPTY) ? null : new Integer(scString);
     }
 }
