@@ -5,11 +5,8 @@ import by.ostis.common.conforg.model.dao.exception.DAOException;
 import by.ostis.common.conforg.model.entity.Workplace;
 import by.ostis.common.sctpclient.model.ScAddress;
 import by.ostis.common.sctpclient.model.ScString;
-import by.ostis.common.sctpclient.utils.constants.ScElementType;
 
-import java.util.UUID;
-
-public class WorkplaceDAOImpl implements WorkplaceDAO {
+public class WorkplaceDAOImpl extends BaseDAOImpl<Workplace> implements WorkplaceDAO {
 
     private enum ScChildRelations implements ScIdentifiable {
 
@@ -28,37 +25,28 @@ public class WorkplaceDAOImpl implements WorkplaceDAO {
     }
 
     public WorkplaceDAOImpl() {
-        super();
+        super(ScSpaces.WORKPLACE);
     }
 
-    public UUID save(Workplace element) throws DAOException {
-        if (element.getSystemId() != null) {
-            throw new DAOException("attempting to save object with non-empty system id");
-        }
-        final UUID addressUuid = UUID.randomUUID();
-        ScAddress addressNode = ScUtils.INSTANCE.createElWithGivenSystemId(addressUuid);
-
-        ScAddress addressSpaceNode = ScUtils.INSTANCE.findElement(ScSpaces.WORKPLACE.getSystemId());
-        ScUtils.INSTANCE.createArc(ScElementType.SC_TYPE_ARC_POS, addressSpaceNode, addressNode);
-
-        saveFields(element, addressNode);
-
-        element.setSystemId(addressUuid);
-        return addressUuid;
-    }
-
-    @Override
-    public Workplace read(UUID systemId) throws DAOException {
-        return null;
-    }
-
-    private void saveFields(Workplace element, ScAddress addressNode) throws DAOException {
-        ScString positionContent = ScUtils.INSTANCE.wrapString(element.getPosition());
+    protected void saveFields(Workplace element, ScAddress addressNode) throws DAOException {
+        ScString positionContent = ScStrings.wrap(element.getPosition());
         ScAddress positionNode = ScUtils.INSTANCE.createNodeWithContent(positionContent);
         ScUtils.INSTANCE.createRelation(addressNode, positionNode, ScChildRelations.POSITION);
 
-        ScString workplaceContent = ScUtils.INSTANCE.wrapString(element.getWorkplace());
+        ScString workplaceContent = ScStrings.wrap(element.getWorkplace());
         ScAddress workplaceNode = ScUtils.INSTANCE.createNodeWithContent(workplaceContent);
         ScUtils.INSTANCE.createRelation(addressNode, workplaceNode, ScChildRelations.WORKPLACE);
+    }
+
+    protected Workplace readFields(ScAddress addressElement) throws DAOException {
+        ScAddress workplaceAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
+                ScChildRelations.WORKPLACE);
+        String workplaceContent = ScUtils.INSTANCE.findElementContent(workplaceAdr);
+
+        ScAddress positionAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
+                ScChildRelations.POSITION);
+        String positionContent = ScUtils.INSTANCE.findElementContent(positionAdr);
+
+        return new Workplace(workplaceContent, positionContent);
     }
 }
