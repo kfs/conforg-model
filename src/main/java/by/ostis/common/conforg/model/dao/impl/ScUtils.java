@@ -26,10 +26,15 @@ enum ScUtils {
 
     INSTANCE;
 
+    private static final String HOST = "localhost";
+    private static final int PORT = 50041;
+
     private final SctpClient sctpClient;
 
     ScUtils() {
         sctpClient = new SctpClientImpl();
+        // TODO load settings from .properties
+        sctpClient.init(HOST, PORT);
     }
 
     public ScAddress findElement(UUID uuid) throws DAOException {

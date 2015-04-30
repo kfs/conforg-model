@@ -1,6 +1,7 @@
 package by.ostis.common.conforg.model.dao.impl;
 
 enum ScCommonRelations implements ScIdentifiable {
+
     ADDRESS("conforg_address*");
 
     private String systemId;
