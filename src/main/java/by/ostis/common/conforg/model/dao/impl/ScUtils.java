@@ -58,7 +58,7 @@ enum ScUtils {
         return response.getAnswer();
     }
 
-    public boolean isElementOfSpace(ScAddress element, ScSpaces space) throws DAOException {
+    public boolean belongsToSpace(ScAddress element, ScSpaces space) throws DAOException {
         final String spaceId = space.getSystemId();
         ScAddress spaceAdr = findElement(spaceId);
         List<ScParameter> parameters = new ArrayList<ScParameter>(3);

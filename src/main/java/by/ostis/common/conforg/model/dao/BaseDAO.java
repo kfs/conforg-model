@@ -1,10 +1,11 @@
 package by.ostis.common.conforg.model.dao;
 
 import by.ostis.common.conforg.model.dao.exception.DAOException;
+import by.ostis.common.conforg.model.entity.Identifiable;
 
 import java.util.UUID;
 
-public interface BaseDAO<Type> {
+public interface BaseDAO<Type extends Identifiable> {
 
     /**
      * Performs save operation.

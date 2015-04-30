@@ -2,15 +2,11 @@ package by.ostis.common.conforg.model.dao.impl;
 
 import by.ostis.common.conforg.model.dao.AddressDAO;
 import by.ostis.common.conforg.model.dao.exception.DAOException;
-import by.ostis.common.conforg.model.dao.exception.TypeMismatchException;
 import by.ostis.common.conforg.model.entity.Address;
 import by.ostis.common.sctpclient.model.ScAddress;
 import by.ostis.common.sctpclient.model.ScString;
-import by.ostis.common.sctpclient.utils.constants.ScElementType;
 
-import java.util.UUID;
-
-public class AddressDAOImpl implements AddressDAO {
+public class AddressDAOImpl extends BaseDAOImpl<Address> implements AddressDAO {
 
     private enum ScChildRelations implements ScIdentifiable {
 
@@ -31,26 +27,10 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     public AddressDAOImpl() {
-        super();
+        super(ScSpaces.ADDRESS);
     }
 
-    public UUID save(Address element) throws DAOException {
-        if (element.getSystemId() != null) {
-            throw new DAOException("attempting to save object with non-empty system id");
-        }
-        final UUID addressUuid = UUID.randomUUID();
-        ScAddress addressNode = ScUtils.INSTANCE.createElWithGivenSystemId(addressUuid);
-
-        ScAddress addressSpaceNode = ScUtils.INSTANCE.findElement(ScSpaces.ADDRESS.getSystemId());
-        ScUtils.INSTANCE.createArc(ScElementType.SC_TYPE_ARC_POS, addressSpaceNode, addressNode);
-
-        saveFields(element, addressNode);
-
-        element.setSystemId(addressUuid);
-        return addressUuid;
-    }
-
-    private void saveFields(Address element, ScAddress addressNode) throws DAOException {
+    protected void saveFields(Address element, ScAddress addressNode) throws DAOException {
         ScString countryContent = ScUtils.INSTANCE.wrapString(element.getCountry());
         ScAddress countryNode = ScUtils.INSTANCE.createNodeWithContent(countryContent);
         ScUtils.INSTANCE.createRelation(addressNode, countryNode, ScChildRelations.COUNTRY);
@@ -68,22 +48,7 @@ public class AddressDAOImpl implements AddressDAO {
         ScUtils.INSTANCE.createRelation(addressNode, houseNumberNode, ScChildRelations.HOUSE_NUMBER);
     }
 
-    public Address read(UUID systemId) throws DAOException {
-        if (systemId == null) {
-            throw new NullPointerException("cannot find element, system id is null");
-        }
-        ScAddress addressElement = ScUtils.INSTANCE.findElement(systemId);
-        boolean convenientType = ScUtils.INSTANCE.isElementOfSpace(addressElement, ScSpaces.ADDRESS);
-        if (!convenientType) {
-            throw new TypeMismatchException("element with given system id doesn't belong to address space, id: "
-                    + systemId);
-        }
-        Address address = readFields(addressElement);
-        address.setSystemId(systemId);
-        return address;
-    }
-
-    private Address readFields(ScAddress addressElement) throws DAOException {
+    protected Address readFields(ScAddress addressElement) throws DAOException {
         ScAddress countryAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
                 ScChildRelations.COUNTRY);
         String countryContent = ScUtils.INSTANCE.findElementContent(countryAdr);
