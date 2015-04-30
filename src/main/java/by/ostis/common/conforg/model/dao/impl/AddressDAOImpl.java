@@ -78,7 +78,9 @@ public class AddressDAOImpl implements AddressDAO {
             throw new TypeMismatchException("element with given system id doesn't belong to address space, id: "
                     + systemId);
         }
-        return readFields(addressElement);
+        Address address = readFields(addressElement);
+        address.setSystemId(systemId);
+        return address;
     }
 
     private Address readFields(ScAddress addressElement) throws DAOException {
