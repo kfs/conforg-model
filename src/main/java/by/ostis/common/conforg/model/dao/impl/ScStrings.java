@@ -16,6 +16,11 @@ final class ScStrings {
         return StringUtils.isNotEmpty(value) ? new ScString(value) : new ScString(StringUtils.EMPTY);
     }
 
+
+    public static ScString wrap(Boolean value) {
+        return value == null ? new ScString("0") : new ScString(value ? "1" : "0");
+    }
+
     public static ScString wrap(UUID uuid) {
         final String systemId = uuid.toString();
         return new ScString(systemId);
@@ -54,5 +59,9 @@ final class ScStrings {
 
     public static Integer unwrapToInteger(String scString) {
         return scString.equals(StringUtils.EMPTY) ? null : new Integer(scString);
+    }
+
+    public static Boolean unwrapToBoolean(String value) {
+        return value.equals("0") ? Boolean.FALSE : Boolean.TRUE;
     }
 }
