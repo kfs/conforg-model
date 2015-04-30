@@ -32,11 +32,6 @@ enum ScUtils {
         sctpClient = new SctpClientImpl();
     }
 
-    @Deprecated
-    public ScString wrapString(String content) {
-        return new ScString(content);
-    }
-
     public ScAddress findElement(UUID uuid) throws DAOException {
         String systemId = uuid.toString();
         return findElement(systemId);
@@ -45,7 +40,7 @@ enum ScUtils {
     public ScAddress findElement(String systemId) throws DAOException {
         SctpResponse<ScAddress> response;
         try {
-            ScString scId = wrapString(systemId);
+            ScString scId = ScStrings.wrap(systemId);
             response = sctpClient.searchElement(scId);
         } catch (SctpClientException e) {
             throw new DAOException("element not found: " + systemId, e);
@@ -190,8 +185,4 @@ enum ScUtils {
             throw new DAOException("cannot load content of element", e);
         }
     }
-
-//    public List<ScIterator> findTripletByFixedNode() {
-//
-//    }
 }
