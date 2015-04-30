@@ -32,13 +32,9 @@ enum ScUtils {
         sctpClient = new SctpClientImpl();
     }
 
+    @Deprecated
     public ScString wrapString(String content) {
         return new ScString(content);
-    }
-
-    public ScString wrapUuid(UUID uuid) {
-        final String systemId = uuid.toString();
-        return new ScString(systemId);
     }
 
     public ScAddress findElement(UUID uuid) throws DAOException {
@@ -92,7 +88,7 @@ enum ScUtils {
 
     public ScAddress createElWithGivenSystemId(UUID systemId) throws DAOException {
         ScAddress newNode = createEmptyNode();
-        ScString scId = wrapUuid(systemId);
+        ScString scId = ScStrings.wrap(systemId);
         try {
             SctpResponse<Boolean> setSysIdResponse = sctpClient.setSystemIdentifier(newNode, scId);
             checkHeader(setSysIdResponse.getHeader());

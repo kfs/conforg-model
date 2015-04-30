@@ -4,8 +4,7 @@ import by.ostis.common.conforg.model.dao.PersonDAO;
 import by.ostis.common.conforg.model.dao.exception.DAOException;
 import by.ostis.common.conforg.model.entity.Person;
 import by.ostis.common.sctpclient.model.ScAddress;
-
-import java.util.UUID;
+import by.ostis.common.sctpclient.model.ScString;
 
 public class PersonDAOImpl extends BaseDAOImpl<Person> implements PersonDAO {
 
@@ -31,11 +30,14 @@ public class PersonDAOImpl extends BaseDAOImpl<Person> implements PersonDAO {
     }
 
     @Override
-    protected void saveFields(Person element, ScAddress parentNode) {
-        // TODO save fields
+    protected void saveFields(Person element, ScAddress parentNode) throws DAOException {
+        ScString firstNameContent = ScStrings.wrap(element.getFirstName());
+        ScAddress firstNameNode = ScUtils.INSTANCE.createNodeWithContent(firstNameContent);
+        ScUtils.INSTANCE.createRelation(parentNode, firstNameNode, ScChildRelations.FIRST_NAME);
     }
 
-    public Person read(UUID systemId) throws DAOException {
-        throw new DAOException("not implemented yet");
+    @Override
+    protected Person readFields(ScAddress elementNode) throws DAOException {
+        return null;
     }
 }

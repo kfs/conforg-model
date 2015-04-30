@@ -30,24 +30,26 @@ public class AddressDAOImpl extends BaseDAOImpl<Address> implements AddressDAO {
         super(ScSpaces.ADDRESS);
     }
 
+    @Override
     protected void saveFields(Address element, ScAddress addressNode) throws DAOException {
-        ScString countryContent = ScUtils.INSTANCE.wrapString(element.getCountry());
+        ScString countryContent = ScStrings.wrap(element.getCountry());
         ScAddress countryNode = ScUtils.INSTANCE.createNodeWithContent(countryContent);
         ScUtils.INSTANCE.createRelation(addressNode, countryNode, ScChildRelations.COUNTRY);
 
-        ScString cityContent = ScUtils.INSTANCE.wrapString(element.getCity());
+        ScString cityContent = ScStrings.wrap(element.getCity());
         ScAddress cityNode = ScUtils.INSTANCE.createNodeWithContent(cityContent);
         ScUtils.INSTANCE.createRelation(addressNode, cityNode, ScChildRelations.CITY);
 
-        ScString streetContent = ScUtils.INSTANCE.wrapString(element.getStreet());
+        ScString streetContent = ScStrings.wrap(element.getStreet());
         ScAddress streetNode = ScUtils.INSTANCE.createNodeWithContent(streetContent);
         ScUtils.INSTANCE.createRelation(addressNode, streetNode, ScChildRelations.STREET);
 
-        ScString houseNumberContent = ScUtils.INSTANCE.wrapString(element.getHouseNumber());
+        ScString houseNumberContent = ScStrings.wrap(element.getHouseNumber());
         ScAddress houseNumberNode = ScUtils.INSTANCE.createNodeWithContent(houseNumberContent);
         ScUtils.INSTANCE.createRelation(addressNode, houseNumberNode, ScChildRelations.HOUSE_NUMBER);
     }
 
+    @Override
     protected Address readFields(ScAddress addressElement) throws DAOException {
         ScAddress countryAdr = ScUtils.INSTANCE.findUniqueElementByParentAndRelation(addressElement,
                 ScChildRelations.COUNTRY);
