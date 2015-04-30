@@ -11,7 +11,9 @@ import by.ostis.common.sctpclient.model.ScAddress;
 public class ConferenceDAOImpl extends BaseDAOImpl<Conference> implements ConferenceDAO {
 
     private enum ScChildRelations {
-        ;
+        TITLE("conforg_conferences_title*"),
+        START_DATE("conforg_conferences_start_date*"),
+        END_DATE("conforg_conferences_end_date*");
 
         private String systemId;
 
